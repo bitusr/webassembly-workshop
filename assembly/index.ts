@@ -17,3 +17,11 @@ export function fizzbuzz(n: i32): String | null {
   }
   return null
 }
+
+memory.grow(2)
+store<u8>(0, 21) // allocate to memory
+store<u8>(1, 99)
+
+export function readMemory(n: i32): i32 {
+  return load<u8>(n) // load from memory
+}
