@@ -6,27 +6,86 @@
     <div id="main"></div>
     <script src="/js/loader.js"></script>
     <script>
+      // const WL = new WasmLoader();
+      // WL.wasm('/build/optimized.wasm')
+      //   .then(instance => {
+      //     // First task
+      //     const { fizzbuzz, __getString } = instance
+      //     // __getString - helper from the lib
+      //     // because just fizzbuzz(3) would return a
+      //     // POINTER to the start of the MEMORY CHUNK
+      //     const str = __getString(fizzbuzz(3))
+      //     document.write(str)
+      //     document.write('<br>')
+      //
+      //     // Second task
+      //     const { readMemory, memory } = instance
+      //     const memoryArray = new Uint8Array(memory.buffer)
+      //     document.write(memoryArray[1])
+      //     document.write('<br>')
+      //
+      //     memoryArray[2] = 42 // write directly to the memory
+      //     document.write(readMemory(2)) // read the 42 value which we just wrote to the memory
+      //   })
+    </script>
+
+    <!-- WASM vs JS performance. WASM is up to 20 times faster -->
+    <input id="primeIn"/>
+    <script>
+      const el = document.getElementById("primeIn");
+
+      function isPrimeJS(x) {
+        if (x < 2) {
+          return false;
+        }
+
+        for (let i = 2; i < x; i++) {
+          if (x % i === 0) {
+            return false;
+          }
+        }
+        return true;
+      }
+
       const WL = new WasmLoader();
       WL.wasm('/build/optimized.wasm')
         .then(instance => {
-          // First task
-          const { fizzbuzz, __getString } = instance
-          // __getString - helper from the lib
-          // because just fizzbuzz(3) would return a
-          // POINTER to the start of the MEMORY CHUNK
-          const str = __getString(fizzbuzz(3))
-          document.write(str)
-          document.write('<br>')
+          const { isPrimeWasm } = instance;
+          el.addEventListener('keyup', () => {
+            console.table(run(el.value))
+          })
+          function run(n) {
+            const results = [];
+            for (let i = 0; i < 1000; i++) {
+              const timeStartWasm = performance.now();
+              isPrimeWasm(n);
+              const wasmTime = performance.now() - timeStartWasm;
 
-          // Second task
-          const { readMemory, memory } = instance
-          const memoryArray = new Uint8Array(memory.buffer)
-          document.write(memoryArray[1])
-          document.write('<br>')
 
-          memoryArray[2] = 42 // write directly to the memory
-          document.write(readMemory(2)) // read the 42 value which we just wrote to the memory
-        })
+              const timeStartJS = performance.now();
+              isPrimeJS(n);
+              const jsTime = performance.now() - timeStartJS;
+
+              if (jsTime < wasmTime) {
+                results.push('JavaScript');
+              } else {
+                results.push('WASM');
+              }
+            }
+
+            return results.reduce((acc, item) => {
+              if (item === 'JavaScript') {
+                acc['JavaScript']++
+              }
+              if (item === 'WASM') {
+                acc['WASM']++
+              }
+              return acc;
+            }, {'JavaScript': 0, 'WASM': 0})
+
+          }
+
+        });
     </script>
 </body>
 </html>
