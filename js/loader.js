@@ -22,7 +22,7 @@ class WasmLoader {
     }
 
     // instantiateStreaming takes Promise, converts to bytes
-    const { instance } = await loader.instantiateStreaming(fetch(path), imports)
+    const instance = await loader.instantiateStreaming(fetch(path), imports)
 
     return instance?.exports
   }
@@ -33,7 +33,7 @@ class WasmLoader {
     const resp = await fetch(path)
     // array buffer is an array of raw binary data
     const bytes = await resp?.arrayBuffer()
-    const { instance } = loader.instantiate(bytes, imports)
+    const instance = loader.instantiate(bytes, imports)
 
     return instance?.exports
   }

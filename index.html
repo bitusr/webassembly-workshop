@@ -9,8 +9,12 @@
       const WL = new WasmLoader();
       WL.wasm('/build/optimized.wasm')
         .then(instance => {
-            const { fizzbuzz } = instance
-            document.write(fizzbuzz(3))
+            const { fizzbuzz, __getString } = instance
+            // __getString - helper from the lib
+            // because just fizzbuzz(3) would return a
+            // POINTER to the start of the MEMORY CHUNK
+            const str = __getString(fizzbuzz(3))
+            document.write(str)
         })
     </script>
 </body>
