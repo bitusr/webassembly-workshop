@@ -2,14 +2,15 @@
 <!DOCTYPE html>
 <html>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/@assemblyscript/loader/umd/index.js"></script>
     <div id="main"></div>
     <script src="/js/loader.js"></script>
     <script>
       const WL = new WasmLoader();
       WL.wasm('/build/optimized.wasm')
         .then(instance => {
-            const { minusOne } = instance
-            document.write(minusOne(44))
+            const { fizzbuzz } = instance
+            document.write(fizzbuzz(3))
         })
     </script>
 </body>
